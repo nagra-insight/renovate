@@ -11,14 +11,17 @@ const githubRelease = regEx(
 
 export function findSourceUrl(release: HelmRelease): RepoSource {
   // it's a github release :)
-  let match = githubRelease.exec(release.urls[0]);
-  if (match) {
-    return { sourceUrl: match[1] };
+  const releaseMatch = githubRelease.exec(release.urls[0]);
+  if (releaseMatch) {
+    return { sourceUrl: releaseMatch[1] };
   }
 
-  match = githubUrl.exec(release.home);
-  if (chartRepo.test(match?.groups.repo)) {
-    return { sourceUrl: match.groups.url, sourceDirectory: match.groups.path };
+  const homeMatch = githubUrl.exec(release.home);
+  if (chartRepo.test(homeMatch?.groups.repo)) {
+    return {
+      sourceUrl: homeMatch.groups.url,
+      sourceDirectory: homeMatch.groups.path,
+    };
   }
 
   if (!release.sources?.length) {
@@ -26,15 +29,28 @@ export function findSourceUrl(release: HelmRelease): RepoSource {
   }
 
   for (const url of release.sources) {
-    match = githubUrl.exec(url);
-    if (chartRepo.test(match?.groups.repo)) {
+    const sourcesMatch = githubUrl.exec(url);
+    if (chartRepo.test(sourcesMatch?.groups.repo)) {
       return {
-        sourceUrl: match.groups.url,
-        sourceDirectory: match.groups.path,
+        sourceUrl: sourcesMatch.groups.url,
+        sourceDirectory: sourcesMatch.groups.path,
       };
     }
   }
 
   // fallback
-  return { sourceUrl: release.sources[0] };
+  const firstSourceMatch = githubUrl.exec(release.sources[0]);
+  if (homeMatch?.groups.url && homeMatch?.groups.path) {
+    return {
+      sourceUrl: homeMatch.groups.url,
+      sourceDirectory: homeMatch.groups.path,
+    };
+  } else if (firstSourceMatch?.groups.url && firstSourceMatch?.groups.path) {
+    return {
+      sourceUrl: firstSourceMatch.groups.url,
+      sourceDirectory: firstSourceMatch.groups.path,
+    };
+  } else {
+    return { sourceUrl: release.sources[0] };
+  }
 }
