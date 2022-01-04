@@ -27,7 +27,7 @@ Therefore if you need Renovate to support any non-npm lock files like Bundler th
 
 The `renovate` npm package is compatible with all of Renovate's supported platforms.
 
-Renovate requires Node.js >=14.15.0 as well as Git >=2.33.0.
+Renovate requires Node.js `>=14.15.0` and Git `>=2.33.0`.
 
 #### Docker image
 
@@ -187,6 +187,13 @@ Don't forget to configure `platform=gitlab` somewhere in config.
 #### Bitbucket Cloud
 
 First, [create an AppPassword](https://confluence.atlassian.com/bitbucket/app-passwords-828781300.html) for the bot account.
+Give the bot App password the following permission scopes:
+
+- [`account`](https://developer.atlassian.com/cloud/bitbucket/rest/intro/#account) (Account: Read)
+- [`team`](https://developer.atlassian.com/cloud/bitbucket/rest/intro/#team) (Workspace membership: Read)
+- [`issue:write`](https://developer.atlassian.com/cloud/bitbucket/rest/intro/#issue-write) (Issues: Write)
+- [`pullrequest:write`](https://developer.atlassian.com/cloud/bitbucket/rest/intro/#pullrequest-write) (Pull requests: Write)
+
 Configure it as `password` in your `config.js` file, or in environment variable `RENOVATE_PASSWORD`, or via CLI `--password=`.
 Also be sure to configure the `username` for your bot account too.
 Don't forget to configure `platform=bitbucket` somewhere in config.
